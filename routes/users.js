@@ -35,17 +35,45 @@ router.post('/registered', function (req, res, next) {
   });
 });
 
-// router.get('/ulist', async (req, res, next) => {
-//   try {
-//       // Query the database to get all users, but exclude the 'hashed_password' field
-//       const [users] = await db.query('SELECT id, first_name, last_name, username, email FROM users');
-      
-//       // Render the users list page and pass the users data to the template
-//       res.render('ulist.ejs', { users: users });
-//   } catch (err) {
-//       next(err);  // Pass errors to the error handler
-//   }
-// });
+router.get('/login', function (req, res, next) {
+    res.render('login.ejs')                                                               
+})    
+
+router.post('/loggedin', function (req, res, next) {
+    const { username, password: plainPassword } = req.body;
+
+    // First, retrieve the user from the database using their username (or email)
+    let sqlquery = "SELECT * FROM users WHERE Username = ?";
+    db.query(sqlquery, [username], (err, users) => {
+        if (err) {
+            return next(err); // Handle query error
+        }
+
+        // If no user is found, return an error
+        if (users.length === 0) {
+            return res.send("No user found with that username.");
+        }
+
+        // If a user is found, compare the password with the hashed password stored in the DB
+        const user = users[0]; // Assuming there is one user with the given username
+        const hashedPassword = user.Hashed_Password;
+
+        // Compare the plain password with the hashed password
+        bcrypt.compare(plainPassword, hashedPassword, function(err, result) {
+            if (err) {
+                return next(err); // Handle bcrypt comparison error
+            }
+
+            if (result) {
+                // Passwords match, proceed with login
+                res.send(`Welcome back, ${user.First_name} ${user.Last_name}! You are successfully logged in.`);
+            } else {
+                // Passwords do not match
+                res.send("Invalid username or password. Please try again.");
+            }
+        });
+    });
+});
 
 router.get('/ulist', function(req, res, next) {
     let sqlquery = "SELECT * FROM users" // query database to get all the books
