@@ -7,10 +7,10 @@
   <body>
     <h1>Register for <%=shopData.shopName%></h1>
     <form method="POST" action="registered">
-        <p>First name: <input id="first" type="text" name="first" /></p>
-        <p>Last name: <input id="last" type="text" name="last"/></p>
+        <p>First name: <input id="first" type="text" name="first"  pattern="[A-Za-z]+" title="First name can only contain letters."/></p>
+        <p>Last name: <input id="last" type="text" name="last" pattern="[A-Za-z]+" title="Last name can only contain letters."/></p>
         <p>Username: <input id="username" type="text" name="username"/></p>
-        <p>Password: <input id="password" type="password" name="password"/></p>
+        <p>Password: <input id="password" type="password" name="password" minlength="8" title="Password must be at least 8 characters long." //></p>
         <p>Email: <input id="email" type="text" name="email"/></p>
         <input type="submit" value="Register" />
       </form>
